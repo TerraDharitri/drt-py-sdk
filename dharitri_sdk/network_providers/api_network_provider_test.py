@@ -27,7 +27,7 @@ class Pagination(IPagination):
 
 @pytest.mark.networkInteraction
 class TestApi:
-    api = ApiNetworkProvider('https://devnet-api.dharitri.org')
+    api = ApiNetworkProvider('http://localhost:8080')
 
     def test_get_network_stake_statistic(self):
         result = self.api.get_network_stake_statistics()
@@ -219,7 +219,7 @@ class TestApi:
 
         # using the new instantiated provider with user agent
         config = NetworkProviderConfig(client_name="test-client")
-        api = ApiNetworkProvider(url='https://devnet-api.dharitri.org', config=config)
+        api = ApiNetworkProvider(url='http://localhost:8080', config=config)
 
         response = requests.get(api.url + "/network/config", **api.config.requests_options)
         headers = response.request.headers

@@ -10,7 +10,7 @@ from dharitri_sdk.network_providers.proxy_network_provider import (
 
 @pytest.mark.networkInteraction
 class TestProxy:
-    proxy = ProxyNetworkProvider("https://devnet-gateway.dharitri.org")
+    proxy = ProxyNetworkProvider("http://localhost:8080")
 
     def test_get_network_config(self):
         result = self.proxy.get_network_config()
@@ -243,7 +243,7 @@ class TestProxy:
 
         # using the new instantiated provider with user agent
         config = NetworkProviderConfig(client_name="test-client")
-        proxy = ProxyNetworkProvider(url='https://devnet-gateway.dharitri.org', config=config)
+        proxy = ProxyNetworkProvider(url='http://localhost:8080', config=config)
 
         response = requests.get(proxy.url + "/network/config", **proxy.config.requests_options)
         headers = response.request.headers
