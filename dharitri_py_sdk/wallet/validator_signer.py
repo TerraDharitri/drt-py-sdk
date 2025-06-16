@@ -1,9 +1,7 @@
 from pathlib import Path
 
-from dharitri_py_sdk.wallet.errors import ErrCannotSign
-from dharitri_py_sdk.wallet.interfaces import ISignature
-from dharitri_py_sdk.wallet.validator_keys import (ValidatorPublicKey,
-                                                  ValidatorSecretKey)
+from dharitri_py_sdk.wallet.errors import CannotSignError
+from dharitri_py_sdk.wallet.validator_keys import ValidatorPublicKey, ValidatorSecretKey
 from dharitri_py_sdk.wallet.validator_pem import ValidatorPEM
 
 
@@ -16,17 +14,17 @@ class ValidatorSigner:
         self.secret_key = secret_key
 
     @classmethod
-    def from_pem_file(cls, path: Path, index: int = 0) -> 'ValidatorSigner':
+    def from_pem_file(cls, path: Path, index: int = 0) -> "ValidatorSigner":
         secret_key = ValidatorPEM.from_file(path, index).secret_key
         return ValidatorSigner(secret_key)
 
-    def sign(self, data: bytes) -> ISignature:
+    def sign(self, data: bytes) -> bytes:
         try:
             return self._try_sign(data)
         except Exception as err:
-            raise ErrCannotSign() from err
+            raise CannotSignError() from err
 
-    def _try_sign(self, data: bytes) -> ISignature:
+    def _try_sign(self, data: bytes) -> bytes:
         signature = self.secret_key.sign(data)
         return signature
 

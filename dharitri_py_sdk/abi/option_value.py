@@ -1,8 +1,10 @@
 import io
 from typing import Any, Optional
 
-from dharitri_py_sdk.abi.constants import (OPTION_MARKER_FOR_ABSENT_VALUE,
-                                          OPTION_MARKER_FOR_PRESENT_VALUE)
+from dharitri_py_sdk.abi.constants import (
+    OPTION_MARKER_FOR_ABSENT_VALUE,
+    OPTION_MARKER_FOR_PRESENT_VALUE,
+)
 from dharitri_py_sdk.abi.interface import ISingleValue
 from dharitri_py_sdk.abi.shared import read_bytes_exactly
 

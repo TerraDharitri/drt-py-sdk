@@ -4,7 +4,7 @@ The Python SDK for interacting with DharitrI. It's an all in one sdk that can be
 
 ## Documentation
 
-- [Cookbook](./examples/Cookbook.ipynb)
+- [Cookbook](./examples/v1.ipynb)
 - [Auto-generated documentation](https://TerraDharitri.github.io/drt-py-sdk/)
 
 ## Development setup
@@ -23,6 +23,11 @@ Install development dependencies, as well:
 
 ```
 pip install -r ./requirements-dev.txt --upgrade
+```
+
+Allow `pre-commit` to automatically run on `git commit`:
+```
+pre-commit install
 ```
 
 Above, `requirements.txt` should mirror the **dependencies** section of `pyproject.toml`.
@@ -46,6 +51,11 @@ If you want to skip network interaction tests run:
 pytest -m "not networkInteraction"
 ```
 
+We have some tests fetching mainnet transactions that are quite time consuming. To skip those, run this command:
+```
+pytest -m "not mainnet"
+```
+
 ### Generate test coverage report
 
 First, we run the tests using coverage:
@@ -67,7 +77,7 @@ coverage html
 
 Each time a new module/submodule is added it needs to be added to the docs, as well. To do so `cd` in the root directory then run the following command:
 ```bash
-sphinx-apidoc -f -o docs/ dharitri_py_sdk/ *_test.py *constants.py
+sphinx-apidoc -f -o docs/ dharitri_py_sdk/ '*_test.py' '*constants.py'
 ```
 
 This command will regenerate the `.rst` files for each module, excluding the tests and the `constants.py` files.

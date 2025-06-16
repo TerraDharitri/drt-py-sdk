@@ -37,6 +37,14 @@ dharitri\_sdk.wallet.interfaces module
    :undoc-members:
    :show-inheritance:
 
+dharitri\_sdk.wallet.keypair module
+-------------------------------------
+
+.. automodule:: dharitri_py_sdk.wallet.keypair
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dharitri\_sdk.wallet.mnemonic module
 --------------------------------------
 

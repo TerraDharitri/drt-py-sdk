@@ -68,6 +68,14 @@ dharitri\_sdk.abi.bytes\_value module
    :undoc-members:
    :show-inheritance:
 
+dharitri\_sdk.abi.code\_metadata\_value module
+------------------------------------------------
+
+.. automodule:: dharitri_py_sdk.abi.code_metadata_value
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dharitri\_sdk.abi.codec module
 --------------------------------
 
@@ -92,6 +100,14 @@ dharitri\_sdk.abi.enum\_value module
    :undoc-members:
    :show-inheritance:
 
+dharitri\_sdk.abi.explicit\_enum\_value module
+------------------------------------------------
+
+.. automodule:: dharitri_py_sdk.abi.explicit_enum_value
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dharitri\_sdk.abi.fields module
 ---------------------------------
 
@@ -112,6 +128,22 @@ dharitri\_sdk.abi.list\_value module
 --------------------------------------
 
 .. automodule:: dharitri_py_sdk.abi.list_value
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dharitri\_sdk.abi.managed\_decimal\_signed\_value module
+----------------------------------------------------------
+
+.. automodule:: dharitri_py_sdk.abi.managed_decimal_signed_value
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dharitri\_sdk.abi.managed\_decimal\_value module
+--------------------------------------------------
+
+.. automodule:: dharitri_py_sdk.abi.managed_decimal_value
    :members:
    :undoc-members:
    :show-inheritance:

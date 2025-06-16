@@ -1,8 +1,7 @@
 import io
 from typing import Any
 
-from dharitri_py_sdk.abi.shared import (decode_length, encode_length,
-                                       read_bytes_exactly)
+from dharitri_py_sdk.abi.shared import decode_length, encode_length, read_bytes_exactly
 
 
 class StringValue:
@@ -29,8 +28,12 @@ class StringValue:
             self.value = value.decode("utf-8")
         elif isinstance(value, str):
             self.value = value
+        elif isinstance(value, StringValue):
+            self.value = value.value
         else:
-            raise ValueError(f"cannot set payload for string (should be either a string or bytes, but got: {type(value)})")
+            raise ValueError(
+                f"cannot set payload for string (should be either a string or bytes, but got: {type(value)})"
+            )
 
     def get_payload(self) -> Any:
         return self.value

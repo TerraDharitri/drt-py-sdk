@@ -1,4 +1,3 @@
-
 import io
 
 from dharitri_py_sdk.abi.interface import ISingleValue

@@ -8,26 +8,22 @@ Subpackages
    :maxdepth: 4
 
    dharitri_py_sdk.core.proto
-   dharitri_py_sdk.core.transaction_builders
-   dharitri_py_sdk.core.transaction_parsers
-   dharitri_py_sdk.core.transactions_factories
-   dharitri_py_sdk.core.transactions_outcome_parsers
 
 Submodules
 ----------
-
-dharitri\_sdk.core.account module
------------------------------------
-
-.. automodule:: dharitri_py_sdk.core.account
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 dharitri\_sdk.core.address module
 -----------------------------------
 
 .. automodule:: dharitri_py_sdk.core.address
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dharitri\_sdk.core.base\_controller module
+--------------------------------------------
+
+.. automodule:: dharitri_py_sdk.core.base_controller
    :members:
    :undoc-members:
    :show-inheritance:
@@ -48,26 +44,10 @@ dharitri\_sdk.core.code\_metadata module
    :undoc-members:
    :show-inheritance:
 
-dharitri\_sdk.core.codec module
----------------------------------
+dharitri\_sdk.core.config module
+----------------------------------
 
-.. automodule:: dharitri_py_sdk.core.codec
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dharitri\_sdk.core.contract\_query module
--------------------------------------------
-
-.. automodule:: dharitri_py_sdk.core.contract_query
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dharitri\_sdk.core.contract\_query\_builder module
-----------------------------------------------------
-
-.. automodule:: dharitri_py_sdk.core.contract_query_builder
+.. automodule:: dharitri_py_sdk.core.config
    :members:
    :undoc-members:
    :show-inheritance:
@@ -96,38 +76,6 @@ dharitri\_sdk.core.message module
    :undoc-members:
    :show-inheritance:
 
-dharitri\_sdk.core.serializer module
---------------------------------------
-
-.. automodule:: dharitri_py_sdk.core.serializer
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dharitri\_sdk.core.smart\_contract\_queries\_controller module
-----------------------------------------------------------------
-
-.. automodule:: dharitri_py_sdk.core.smart_contract_queries_controller
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dharitri\_sdk.core.smart\_contract\_query module
---------------------------------------------------
-
-.. automodule:: dharitri_py_sdk.core.smart_contract_query
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dharitri\_sdk.core.token\_payment module
-------------------------------------------
-
-.. automodule:: dharitri_py_sdk.core.token_payment
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dharitri\_sdk.core.tokens module
 ----------------------------------
 
@@ -152,18 +100,34 @@ dharitri\_sdk.core.transaction\_computer module
    :undoc-members:
    :show-inheritance:
 
-dharitri\_sdk.core.transaction\_payload module
-------------------------------------------------
+dharitri\_sdk.core.transaction\_events\_parser module
+-------------------------------------------------------
 
-.. automodule:: dharitri_py_sdk.core.transaction_payload
+.. automodule:: dharitri_py_sdk.core.transaction_events_parser
    :members:
    :undoc-members:
    :show-inheritance:
 
-dharitri\_sdk.core.typecheck module
--------------------------------------
+dharitri\_sdk.core.transaction\_on\_network module
+----------------------------------------------------
 
-.. automodule:: dharitri_py_sdk.core.typecheck
+.. automodule:: dharitri_py_sdk.core.transaction_on_network
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dharitri\_sdk.core.transaction\_status module
+-----------------------------------------------
+
+.. automodule:: dharitri_py_sdk.core.transaction_status
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dharitri\_sdk.core.transactions\_factory\_config module
+---------------------------------------------------------
+
+.. automodule:: dharitri_py_sdk.core.transactions_factory_config
    :members:
    :undoc-members:
    :show-inheritance:

@@ -20,14 +20,6 @@ dharitri\_sdk.core.transactions\_outcome\_parsers.delegation\_transactions\_outc
    :undoc-members:
    :show-inheritance:
 
-dharitri\_sdk.core.transactions\_outcome\_parsers.resources module
---------------------------------------------------------------------
-
-.. automodule:: dharitri_py_sdk.core.transactions_outcome_parsers.resources
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dharitri\_sdk.core.transactions\_outcome\_parsers.smart\_contract\_transactions\_outcome\_parser module
 ---------------------------------------------------------------------------------------------------------
 
