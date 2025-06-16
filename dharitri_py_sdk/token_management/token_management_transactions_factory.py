@@ -393,6 +393,11 @@ Once the token is registered, you can unset this role by calling "unsetBurnRoleG
         add_role_nft_burn: bool = False,
         add_role_nft_add_quantity: bool = False,
         add_role_dcdt_transfer_role: bool = False,
+        add_role_nft_update: bool = False,
+        add_role_dcdt_modify_royalties: bool = False,
+        add_role_dcdt_set_new_uri: bool = False,
+        add_role_dcdt_modify_creator: bool = False,
+        add_role_nft_recreate: bool = False,
     ) -> Transaction:
         parts = [
             "setSpecialRole",
@@ -406,6 +411,11 @@ Once the token is registered, you can unset this role by calling "unsetBurnRoleG
                 *([StringValue("DCDTRoleNFTBurn")] if add_role_nft_burn else []),
                 *([StringValue("DCDTRoleNFTAddQuantity")] if add_role_nft_add_quantity else []),
                 *([StringValue("DCDTTransferRole")] if add_role_dcdt_transfer_role else []),
+                *([StringValue("DCDTRoleNFTUpdate")] if add_role_nft_update else []),
+                *([StringValue("DCDTRoleModifyRoyalties")] if add_role_dcdt_modify_royalties else []),
+                *([StringValue("DCDTRoleSetNewURI")] if add_role_dcdt_set_new_uri else []),
+                *([StringValue("DCDTRoleModifyCreator")] if add_role_dcdt_modify_creator else []),
+                *([StringValue("DCDTRoleNFTRecreate")] if add_role_nft_recreate else []),
             ]
         )
 
@@ -429,6 +439,11 @@ Once the token is registered, you can unset this role by calling "unsetBurnRoleG
         remove_role_nft_burn: bool = False,
         remove_role_nft_add_quantity: bool = False,
         remove_role_dcdt_transfer_role: bool = False,
+        remove_role_nft_update: bool = False,
+        remove_role_dcdt_modify_royalties: bool = False,
+        remove_role_dcdt_set_new_uri: bool = False,
+        remove_role_dcdt_modify_creator: bool = False,
+        remove_role_nft_recreate: bool = False,
     ) -> Transaction:
         parts = [
             "unSetSpecialRole",
@@ -441,6 +456,11 @@ Once the token is registered, you can unset this role by calling "unsetBurnRoleG
                 *([StringValue("DCDTRoleNFTBurn")] if remove_role_nft_burn else []),
                 *([StringValue("DCDTRoleNFTAddQuantity")] if remove_role_nft_add_quantity else []),
                 *([StringValue("DCDTTransferRole")] if remove_role_dcdt_transfer_role else []),
+                *([StringValue("DCDTRoleNFTUpdate")] if remove_role_nft_update else []),
+                *([StringValue("DCDTRoleModifyRoyalties")] if remove_role_dcdt_modify_royalties else []),
+                *([StringValue("DCDTRoleSetNewURI")] if remove_role_dcdt_set_new_uri else []),
+                *([StringValue("DCDTRoleModifyCreator")] if remove_role_dcdt_modify_creator else []),
+                *([StringValue("DCDTRoleNFTRecreate")] if remove_role_nft_recreate else []),
             ]
         )
 
