@@ -7,7 +7,7 @@ allow-direct-references = true
 
 [project]
 name = "dharitri-py-sdk"
-version = "0.0.2"
+version = "0.0.3"
 authors = [{ name = "DharitrI" }]
 license = "MIT"
 description = "The DharitrI Python SDK."

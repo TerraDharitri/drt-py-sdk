@@ -11,8 +11,10 @@ from dharitri_py_sdk.core import (
 )
 from dharitri_py_sdk.network_providers.api_network_provider import ApiNetworkProvider
 from dharitri_py_sdk.network_providers.config import NetworkProviderConfig
+from dharitri_py_sdk.network_providers.constants import BASE_USER_AGENT
 from dharitri_py_sdk.network_providers.http_resources import account_from_api_response
 from dharitri_py_sdk.network_providers.resources import TokenAmountOnNetwork
+from dharitri_py_sdk.network_providers.user_agent import extend_user_agent
 from dharitri_py_sdk.smart_contracts.smart_contract_query import SmartContractQuery
 from dharitri_py_sdk.testutils.wallets import load_wallets
 
@@ -419,9 +421,21 @@ class TestApi:
         guarded = bool(account.raw["isGuarded"])
         assert guarded is False
 
+    def test_do_get_generic_with_bool_value(self):
+        query_params = {"isSmartContract": True}
+        accounts = self.api.do_get_generic("accounts", query_params)
+
+        owner = accounts[0]["ownerAddress"]
+        assert owner
+
     def test_user_agent(self):
-        # using the previoulsy instantiated provider without user agent
-        response = requests.get(self.api.url + "/network/config", **self.api.config.requests_options)
+        # using config without user agent
+        config = NetworkProviderConfig()
+
+        # create the user agent (mimic ApiNetworkProvider's constructor)
+        extend_user_agent(f"{BASE_USER_AGENT}/api", config)
+
+        response = requests.get(self.api.url + "/network/config", **config.requests_options)
         headers = response.request.headers
         assert headers.get("User-Agent") == "dharitri-py-sdk/api/unknown"
 
@@ -429,6 +443,15 @@ class TestApi:
         config = NetworkProviderConfig(client_name="test-client")
         api = ApiNetworkProvider(url="https://devnet-api.dharitri.org", config=config)
 
-        response = requests.get(api.url + "/network/config", **api.config.requests_options)
+        response = requests.get(api.url + "/network/config", **config.requests_options)
         headers = response.request.headers
-        assert headers.get("User-Agent") == "dharitri--py-sdk/api/test-client"
+        assert headers.get("User-Agent") == "dharitri-py-sdk/api/test-client"
+
+    def test_get_transactions(self):
+        address = Address.new_from_bech32("drt1c7pyyq2yaq5k7atn9z6qn5qkxwlc6zwc4vg7uuxn9ssy7evfh5jq4nm79l")
+        transactions = self.api.get_transactions(address)
+        assert len(transactions) == 25
+
+        transactions = self.api.get_transactions(address, {"size": 1, "isRelayed": True})
+        assert len(transactions) == 1
+        assert transactions[0].raw.get("isRelayed")

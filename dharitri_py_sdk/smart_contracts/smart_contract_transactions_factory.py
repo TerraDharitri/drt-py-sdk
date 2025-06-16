@@ -6,7 +6,7 @@ from dharitri_py_sdk.abi.bytes_value import BytesValue
 from dharitri_py_sdk.abi.code_metadata_value import CodeMetadataValue
 from dharitri_py_sdk.abi.serializer import Serializer
 from dharitri_py_sdk.abi.string_value import StringValue
-from dharitri_py_sdk.abi.typesystem import is_list_of_typed_values
+from dharitri_py_sdk.abi.typesystem import is_list_of_bytes, is_list_of_typed_values
 from dharitri_py_sdk.builders.token_transfers_data_builder import (
     TokenTransfersDataBuilder,
 )
@@ -18,7 +18,11 @@ from dharitri_py_sdk.core import (
     TokenTransfer,
     Transaction,
 )
-from dharitri_py_sdk.core.constants import CONTRACT_DEPLOY_ADDRESS_HEX, VM_TYPE_WASM_VM
+from dharitri_py_sdk.core.constants import (
+    CONTRACT_DEPLOY_ADDRESS_HEX,
+    REWA_IDENTIFIER_FOR_MULTI_DCDTNFT_TRANSFER,
+    VM_TYPE_WASM_VM,
+)
 from dharitri_py_sdk.core.transactions_factory_config import TransactionsFactoryConfig
 from dharitri_py_sdk.smart_contracts.errors import ArgumentSerializationError
 
@@ -94,7 +98,12 @@ class SmartContractTransactionsFactory:
         if number_of_tokens == 1:
             transfer = token_transfers[0]
 
-            if self.token_computer.is_fungible(transfer.token):
+            if transfer.token.identifier == REWA_IDENTIFIER_FOR_MULTI_DCDTNFT_TRANSFER:
+                data_parts = self._data_args_builder.build_args_for_multi_dcdt_nft_transfer(
+                    receiver=receiver, transfers=token_transfers
+                )
+                receiver = sender
+            elif self.token_computer.is_fungible(transfer.token):
                 data_parts = self._data_args_builder.build_args_for_dcdt_transfer(transfer=transfer)
             else:
                 data_parts = self._data_args_builder.build_args_for_single_dcdt_nft_transfer(
@@ -195,6 +204,9 @@ class SmartContractTransactionsFactory:
         if is_list_of_typed_values(args):
             return self.serializer.serialize_to_parts(args)
 
+        if is_list_of_bytes(args):
+            return args
+
         raise ArgumentSerializationError()
 
     def _encode_execute_arguments(self, function_name: str, args: list[Any]) -> list[bytes]:
@@ -204,6 +216,9 @@ class SmartContractTransactionsFactory:
         if is_list_of_typed_values(args):
             return self.serializer.serialize_to_parts(args)
 
+        if is_list_of_bytes(args):
+            return args
+
         raise ArgumentSerializationError()
 
     def _encode_upgrade_arguments(self, args: list[Any]) -> list[bytes]:
@@ -212,5 +227,8 @@ class SmartContractTransactionsFactory:
 
         if is_list_of_typed_values(args):
             return self.serializer.serialize_to_parts(args)
+
+        if is_list_of_bytes(args):
+            return args
 
         raise ArgumentSerializationError()

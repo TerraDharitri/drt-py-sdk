@@ -6,7 +6,10 @@ from dharitri_py_sdk.abi.abi import Abi
 from dharitri_py_sdk.accounts import Account
 from dharitri_py_sdk.accounts.ledger_account import LedgerAccount
 from dharitri_py_sdk.core.address import Address
-from dharitri_py_sdk.entrypoints.entrypoints import DevnetEntrypoint
+from dharitri_py_sdk.entrypoints.entrypoints import DevnetEntrypoint, NetworkEntrypoint
+from dharitri_py_sdk.entrypoints.errors import InvalidNetworkProviderKindError
+from dharitri_py_sdk.network_providers.api_network_provider import ApiNetworkProvider
+from dharitri_py_sdk.network_providers.proxy_network_provider import ProxyNetworkProvider
 
 testutils = Path(__file__).parent.parent / "testutils"
 
@@ -173,3 +176,59 @@ class TestEntrypoint:
 
         assert transaction.gas_limit == 10_000_000
         assert transaction.gas_price == 10_000_000_000_000
+
+    def test_initialize_entrypoint(self):
+        entrypoint = NetworkEntrypoint(
+            network_provider_url="https://devnet-api.dharitri.org",
+            network_provider_kind="api",
+            chain_id="D",
+        )
+        assert entrypoint.chain_id == "D"
+        assert isinstance(entrypoint.network_provider, ApiNetworkProvider)
+        assert entrypoint.network_provider.url == "https://devnet-api.dharitri.org"
+
+        entrypoint = NetworkEntrypoint(
+            network_provider_url="https://devnet-gateway.dharitri.org",
+            network_provider_kind="proxy",
+            chain_id="D",
+        )
+        assert entrypoint.chain_id == "D"
+        assert isinstance(entrypoint.network_provider, ProxyNetworkProvider)
+        assert entrypoint.network_provider.url == "https://devnet-gateway.dharitri.org"
+
+        with pytest.raises(InvalidNetworkProviderKindError):
+            entrypoint = NetworkEntrypoint(
+                network_provider_url="https://devnet-gateway.dharitri.org",
+                network_provider_kind="test",
+            )
+
+        api = ApiNetworkProvider("https://devnet-api.dharitri.org")
+        entrypoint = NetworkEntrypoint(network_provider=api)
+        assert entrypoint.chain_id is None
+        assert isinstance(entrypoint.network_provider, ApiNetworkProvider)
+        assert entrypoint.network_provider.url == "https://devnet-api.dharitri.org"
+
+        api = ApiNetworkProvider("https://devnet-api.dharitri.org")
+        entrypoint = NetworkEntrypoint(network_provider=api, chain_id="D")
+        assert entrypoint.chain_id == "D"
+        assert isinstance(entrypoint.network_provider, ApiNetworkProvider)
+        assert entrypoint.network_provider.url == "https://devnet-api.dharitri.org"
+
+        api = ApiNetworkProvider("https://devnet-api.dharitri.org")
+        entrypoint = NetworkEntrypoint.new_from_network_provider(api)
+        assert entrypoint.chain_id is None
+        assert isinstance(entrypoint.network_provider, ApiNetworkProvider)
+        assert entrypoint.network_provider.url == "https://devnet-api.dharitri.org"
+
+        api = ApiNetworkProvider("https://devnet-api.dharitri.org")
+        entrypoint = NetworkEntrypoint.new_from_network_provider(network_provider=api, chain_id="D")
+        assert entrypoint.chain_id == "D"
+        assert isinstance(entrypoint.network_provider, ApiNetworkProvider)
+        assert entrypoint.network_provider.url == "https://devnet-api.dharitri.org"
+
+    def test_ensure_chain_id_is_correctly_fetched(self):
+        api = ApiNetworkProvider("https://devnet-api.dharitri.org")
+        entrypoint = NetworkEntrypoint.new_from_network_provider(api)
+
+        _ = entrypoint.create_delegation_controller()
+        assert entrypoint.chain_id == "D"

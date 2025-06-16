@@ -60,6 +60,13 @@ class TestSmartContractTransactionsFactory:
             arguments=[BigUIntValue(1)],
         )
 
+        transaction_with_bytes_args = self.factory.create_transaction_for_deploy(
+            sender=sender,
+            bytecode=self.bytecode,
+            gas_limit=gas_limit,
+            arguments=[b"\x01"],
+        )
+
         assert (
             transaction_with_typed.sender.to_bech32()
             == "drt1c7pyyq2yaq5k7atn9z6qn5qkxwlc6zwc4vg7uuxn9ssy7evfh5jq4nm79l"
@@ -73,6 +80,7 @@ class TestSmartContractTransactionsFactory:
 
         assert transaction_with_typed == transaction_abi_aware_with_untyped
         assert transaction_with_typed == transaction_abi_aware_with_typed
+        assert transaction_with_typed == transaction_with_bytes_args
 
     def test_create_transaction_for_execute_no_transfer(self):
         sender = Address.new_from_bech32("drt1c7pyyq2yaq5k7atn9z6qn5qkxwlc6zwc4vg7uuxn9ssy7evfh5jq4nm79l")
@@ -116,6 +124,14 @@ class TestSmartContractTransactionsFactory:
             arguments=[U32Value(7)],
         )
 
+        transaction_with_bytes_args = self.factory.create_transaction_for_execute(
+            sender=sender,
+            contract=contract,
+            function=function,
+            gas_limit=gas_limit,
+            arguments=[b"\x07"],
+        )
+
         assert (
             transaction_with_typed.sender.to_bech32()
             == "drt1c7pyyq2yaq5k7atn9z6qn5qkxwlc6zwc4vg7uuxn9ssy7evfh5jq4nm79l"
@@ -131,6 +147,7 @@ class TestSmartContractTransactionsFactory:
 
         assert transaction_with_typed == transaction_abi_aware_with_untyped
         assert transaction_with_typed == transaction_abi_aware_with_typed
+        assert transaction_with_typed == transaction_with_bytes_args
 
     def test_create_transaction_for_execute_and_tranfer_native_token(self):
         sender = Address.new_from_bech32("drt1c7pyyq2yaq5k7atn9z6qn5qkxwlc6zwc4vg7uuxn9ssy7evfh5jq4nm79l")
@@ -179,6 +196,34 @@ class TestSmartContractTransactionsFactory:
         assert transaction.gas_limit == gas_limit
         assert transaction.data
         assert transaction.data.decode() == "DCDTTransfer@464f4f2d366365313762@0a@64756d6d79@07"
+        assert transaction.value == 0
+
+    def test_create_transaction_for_execute_and_transfer_rewa_as_single_token_tranfer(self):
+        sender = Address.new_from_bech32("drt1c7pyyq2yaq5k7atn9z6qn5qkxwlc6zwc4vg7uuxn9ssy7evfh5jq4nm79l")
+        contract = Address.new_from_bech32("drt1qqqqqqqqqqqqqpgqhy6nl6zq07rnzry8uyh6rtyq0uzgtk3e69fq4h4xut")
+        function = "dummy"
+        gas_limit = 6000000
+        args = [U32Value(7)]
+        token = Token("REWA-000000", 0)
+        transfer = TokenTransfer(token, 10)
+
+        transaction = self.factory.create_transaction_for_execute(
+            sender=sender,
+            contract=contract,
+            function=function,
+            gas_limit=gas_limit,
+            arguments=args,
+            token_transfers=[transfer],
+        )
+
+        assert transaction.sender.to_bech32() == "drt1c7pyyq2yaq5k7atn9z6qn5qkxwlc6zwc4vg7uuxn9ssy7evfh5jq4nm79l"
+        assert transaction.receiver.to_bech32() == "drt1c7pyyq2yaq5k7atn9z6qn5qkxwlc6zwc4vg7uuxn9ssy7evfh5jq4nm79l"
+        assert transaction.gas_limit == gas_limit
+        assert transaction.data
+        assert (
+            transaction.data.decode()
+            == "MultiDCDTNFTTransfer@00000000000000000500b9353fe8407f87310c87e12fa1ac807f0485da39d152@01@524557412d303030303030@@0a@64756d6d79@07"
+        )
         assert transaction.value == 0
 
     def test_create_transaction_for_execute_and_send_multiple_dcdts(self):
@@ -346,6 +391,14 @@ class TestSmartContractTransactionsFactory:
             arguments=[BigUIntValue(7)],
         )
 
+        transaction_with_bytes_args = self.factory.create_transaction_for_upgrade(
+            sender=sender,
+            contract=contract_address,
+            bytecode=contract,
+            gas_limit=gas_limit,
+            arguments=[b"\x07"],
+        )
+
         assert (
             transaction_with_typed.sender.to_bech32()
             == "drt1c7pyyq2yaq5k7atn9z6qn5qkxwlc6zwc4vg7uuxn9ssy7evfh5jq4nm79l"
@@ -361,6 +414,7 @@ class TestSmartContractTransactionsFactory:
 
         assert transaction_with_typed == transaction_abi_aware_with_untyped
         assert transaction_with_typed == transaction_abi_aware_with_typed
+        assert transaction_with_typed == transaction_with_bytes_args
 
     def test_create_transaction_for_claiming_developer_rewards(self):
         sender = Address.new_from_bech32("drt1c7pyyq2yaq5k7atn9z6qn5qkxwlc6zwc4vg7uuxn9ssy7evfh5jq4nm79l")

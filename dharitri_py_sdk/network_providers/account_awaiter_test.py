@@ -5,6 +5,9 @@ from dharitri_py_sdk.core.transaction import Transaction
 from dharitri_py_sdk.core.transaction_computer import TransactionComputer
 from dharitri_py_sdk.network_providers.account_awaiter import AccountAwaiter
 from dharitri_py_sdk.network_providers.api_network_provider import ApiNetworkProvider
+from dharitri_py_sdk.network_providers.errors import (
+    ExpectedAccountConditionNotReachedError,
+)
 from dharitri_py_sdk.network_providers.resources import AccountOnNetwork
 from dharitri_py_sdk.testutils.mock_network_provider import (
     MockNetworkProvider,
@@ -76,3 +79,39 @@ class TestAccountAwaiter:
 
         account_on_network = watcher.await_on_condition(frank, condition)
         assert account_on_network.balance == initial_balance + value
+
+    @pytest.mark.networkInteraction
+    def test_ensure_error_if_timeout(self):
+        alice = load_wallets()["alice"]
+        alice_address = Address.new_from_bech32(alice.label)
+        bob = Address.new_from_bech32("drt18h03w0y7qtqwtra3u4f0gu7e3kn2fslj83lqxny39m5c4rwaectswerhd2")
+
+        api = ApiNetworkProvider("https://devnet-api.dharitri.org")
+        watcher = AccountAwaiter(
+            fetcher=api,
+            polling_interval_in_milliseconds=1000,
+            timeout_interval_in_milliseconds=10000,
+        )
+
+        value = 100_000
+        transaction = Transaction(
+            sender=alice_address,
+            receiver=bob,
+            gas_limit=50000,
+            chain_id="D",
+            value=value,
+        )
+        transaction.nonce = api.get_account(alice_address).nonce
+
+        tx_computer = TransactionComputer()
+        transaction.signature = alice.secret_key.sign(tx_computer.compute_bytes_for_signing(transaction))
+
+        initial_balance = api.get_account(bob).balance
+
+        def condition(account: AccountOnNetwork):
+            return account.balance == initial_balance + value
+
+        api.send_transaction(transaction)
+
+        with pytest.raises(ExpectedAccountConditionNotReachedError):
+            watcher.await_on_condition(bob, condition)

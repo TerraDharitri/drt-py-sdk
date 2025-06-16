@@ -1,7 +1,10 @@
 from dharitri_py_sdk.network_providers.account_awaiter import AccountAwaiter
 from dharitri_py_sdk.network_providers.api_network_provider import ApiNetworkProvider
-from dharitri_py_sdk.network_providers.config import NetworkProviderConfig
-from dharitri_py_sdk.network_providers.errors import GenericError
+from dharitri_py_sdk.network_providers.config import (
+    NetworkProviderConfig,
+    RequestsRetryOptions,
+)
+from dharitri_py_sdk.network_providers.errors import NetworkProviderError
 from dharitri_py_sdk.network_providers.proxy_network_provider import ProxyNetworkProvider
 from dharitri_py_sdk.network_providers.resources import (
     AccountOnNetwork,
@@ -25,7 +28,7 @@ from dharitri_py_sdk.network_providers.transaction_decoder import (
 )
 
 __all__ = [
-    "GenericError",
+    "NetworkProviderError",
     "GenericResponse",
     "ApiNetworkProvider",
     "ProxyNetworkProvider",
@@ -46,4 +49,5 @@ __all__ = [
     "TokensCollectionMetadata",
     "TransactionCostResponse",
     "AccountAwaiter",
+    "RequestsRetryOptions",
 ]

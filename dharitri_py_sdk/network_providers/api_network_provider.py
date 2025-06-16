@@ -2,6 +2,8 @@ import urllib.parse
 from typing import Any, Callable, Optional, Union, cast
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry
 
 from dharitri_py_sdk.core import (
     Address,
@@ -19,7 +21,7 @@ from dharitri_py_sdk.network_providers.constants import (
     DEFAULT_ACCOUNT_AWAITING_PATIENCE_IN_MILLISECONDS,
 )
 from dharitri_py_sdk.network_providers.errors import (
-    GenericError,
+    NetworkProviderError,
     TransactionFetchingError,
 )
 from dharitri_py_sdk.network_providers.http_resources import (
@@ -52,7 +54,10 @@ from dharitri_py_sdk.network_providers.resources import (
     TokensCollectionMetadata,
     TransactionCostResponse,
 )
-from dharitri_py_sdk.network_providers.shared import convert_tx_hash_to_string
+from dharitri_py_sdk.network_providers.shared import (
+    convert_boolean_query_params_to_lowercase,
+    convert_tx_hash_to_string,
+)
 from dharitri_py_sdk.network_providers.transaction_awaiter import TransactionAwaiter
 from dharitri_py_sdk.network_providers.user_agent import extend_user_agent
 from dharitri_py_sdk.smart_contracts.smart_contract_query import (
@@ -170,9 +175,25 @@ class ApiNetworkProvider(INetworkProvider):
         transaction_hash = convert_tx_hash_to_string(transaction_hash)
         try:
             response = self.do_get_generic(f"transactions/{transaction_hash}")
-        except GenericError as ge:
+        except NetworkProviderError as ge:
             raise TransactionFetchingError(ge.url, ge.data)
         return transaction_from_api_response(transaction_hash, response)
+
+    def get_transactions(
+        self, address: Address, url_parameters: Optional[dict[str, Any]] = None
+    ) -> list[TransactionOnNetwork]:
+        """Fetches the transactions of an account"""
+        try:
+            response = self.do_get_generic(f"accounts/{address.to_bech32()}/transactions", url_parameters)
+        except NetworkProviderError as ge:
+            raise TransactionFetchingError(ge.url, ge.data)
+
+        transactions: list[TransactionOnNetwork] = []
+        for tx in response:
+            hash = tx.get("txHash")
+            transactions.append(transaction_from_api_response(hash, tx))
+
+        return transactions
 
     def await_transaction_completed(
         self,
@@ -264,6 +285,7 @@ class ApiNetworkProvider(INetworkProvider):
         url = f"{self.url}/{url}"
 
         if url_parameters is not None:
+            url_parameters = convert_boolean_query_params_to_lowercase(url_parameters)
             params = urllib.parse.urlencode(url_parameters)
             url = f"{url}?{params}"
 
@@ -275,6 +297,7 @@ class ApiNetworkProvider(INetworkProvider):
         url = f"{self.url}/{url}"
 
         if url_parameters is not None:
+            url_parameters = convert_boolean_query_params_to_lowercase(url_parameters)
             params = urllib.parse.urlencode(url_parameters)
             url = f"{url}?{params}"
 
@@ -283,17 +306,29 @@ class ApiNetworkProvider(INetworkProvider):
 
     def _do_get(self, url: str) -> Any:
         try:
-            response = requests.get(url, **self.config.requests_options)
+            retry_strategy = Retry(
+                total=self.config.requests_retry_options.retries,
+                backoff_factor=self.config.requests_retry_options.backoff_factor,
+                status_forcelist=self.config.requests_retry_options.status_forcelist,
+            )
+
+            adapter = HTTPAdapter(max_retries=retry_strategy)
+
+            with requests.Session() as session:
+                session.mount("https://", adapter)
+                session.mount("http://", adapter)
+                response = session.get(url, **self.config.requests_options)
+
             response.raise_for_status()
             parsed = response.json()
             return self._get_data(parsed, url)
         except requests.HTTPError as err:
             error_data = self._extract_error_from_response(err.response)
-            raise GenericError(url, error_data)
+            raise NetworkProviderError(url, error_data)
         except requests.ConnectionError as err:
-            raise GenericError(url, err)
+            raise NetworkProviderError(url, err)
         except Exception as err:
-            raise GenericError(url, err)
+            raise NetworkProviderError(url, err)
 
     def _do_post(self, url: str, payload: Any) -> dict[str, Any]:
         try:
@@ -303,11 +338,11 @@ class ApiNetworkProvider(INetworkProvider):
             return cast(dict[str, Any], self._get_data(parsed, url))
         except requests.HTTPError as err:
             error_data = self._extract_error_from_response(err.response)
-            raise GenericError(url, error_data)
+            raise NetworkProviderError(url, error_data)
         except requests.ConnectionError as err:
-            raise GenericError(url, err)
+            raise NetworkProviderError(url, err)
         except Exception as err:
-            raise GenericError(url, err)
+            raise NetworkProviderError(url, err)
 
     def _get_data(self, parsed: Any, url: str) -> Any:
         if isinstance(parsed, list):
@@ -316,7 +351,7 @@ class ApiNetworkProvider(INetworkProvider):
             err = parsed.get("error", None)
             if err:
                 code = parsed.get("statusCode")
-                raise GenericError(url, f"code:{code}, error: {err}")
+                raise NetworkProviderError(url, f"code:{code}, error: {err}")
             else:
                 return parsed
 
